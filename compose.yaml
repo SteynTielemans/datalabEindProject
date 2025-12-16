@@ -30,7 +30,10 @@ services:
     restart: always
 
   grafana:
-    image: grafana/grafana-oss:12.4.0-20252087470-ubuntu
+    image: grafana/grafana-oss:main-ubuntu
+    user: 1001:1002
+    ports: 
+      - "3000:3000"
     volumes:
       - ./grafana_data:/var/lib/grafana
     environment:
