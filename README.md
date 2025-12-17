@@ -18,3 +18,9 @@ Eindproject voor OLOD datalab S2 2025
 omdat het meerdere keren (+10 keer imagen, +3 sd kaartjes geprobeerd) niet lukte om naar de pi via ssh te gaan, heb ik met docker op de VM gewerkt.
 
 Daar werkt zowat alles met dank aan Jorik.
+
+
+## Temp credentials
+
+traefik:
+student - admin
