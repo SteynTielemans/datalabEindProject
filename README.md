@@ -20,6 +20,10 @@ omdat het meerdere keren (+10 keer imagen, +3 sd kaartjes geprobeerd) niet lukte
 Daar werkt zowat alles met dank aan Jorik.
 
 
+## Dingen die werken:
+
+http://traefik.10.158.10.3.traefik.me/dashboard/#/
+
 ## Temp credentials
 
 traefik:
