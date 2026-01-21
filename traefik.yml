@@ -5,3 +5,23 @@ providers:
   docker: {}
 api:
   dashboard: true
+http:
+ routers:
+   traefik:
+     entryPoints:
+       - "https"
+     rule: "Host(`traefiksteyn.datalab.aplab.be`)"
+     service: api@internal
+     priority: 10
+   nginx:
+     entryPoints:
+       - "https"
+     rule: "Host(`teststeyn.datalab.aplab.be`)"
+     service: nginx
+     priority: 10
+ services:
+   nginx:
+     loadBalancer:
+       servers:
+         - url: "http://localhost:8080"
+       passHostHeader: true

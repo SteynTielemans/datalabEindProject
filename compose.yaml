@@ -1,56 +1,82 @@
 services:
   mosquitto:
     image: eclipse-mosquitto:2.0.22
+    container_name: mug
     ports:
       - "1883:1883"
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
-    restart: always
+    user: 1001:1002
+    restart: unless-stopped
 
   influxdb:
     image: influxdb:2.8.0
+    container_name: uitflux
     volumes:
       - ./influxdb_data:/var/lib/influxdb2
       - ./influx_conf:/etc/influxdb2
+    user: 1001:1002
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=influxUser
       - DOCKER_INFLUXDB_INIT_PASSWORD=influxPass
       - DOCKER_INFLUXDB_INIT_ORG=piOrg
       - DOCKER_INFLUXDB_INIT_BUCKET=piBucket
-    restart: always
+    restart: unless-stopped
 
   node-red:
     image: nodered/node-red:4.1.2-22
+    container_name: rodeKnoop
+    ports:
+      - "1880:1880"
     volumes:
       - ./node_red_data:/data
+    user: 1001:1002
     depends_on:
       - mosquitto
       - influxdb
-    restart: always
-
+    restart: unless-stopped
+ 
   grafana:
     image: grafana/grafana-oss:main-ubuntu
-    user: 1001:1002
-    ports: 
+    container_name: graafmachine
+    ports:
       - "3000:3000"
     volumes:
       - ./grafana_data:/var/lib/grafana
+    user: 1001:1002
     environment:
       - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
     depends_on:
       - influxdb
-    restart: always
-
+    restart: unless-stopped
+ 
   traefik:
-    image: traefik:v3.6.4-nanoserver-ltsc2022
+    image: traefik:v3.6.4
+    container_name: HELP
     volumes:
       - ./traefik.yml:/etc/traefik/traefik.yml
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./htpasswd:/etc/traefik/passwd
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.usersfile=/etc/traefik/passwd"
+    user: 996:996
     ports:
       - "80:80"
     depends_on:
       - node-red
       - grafana
-    restart: always
+    restart: unless-stopped
 
+  newt:
+    image: fosrl/newt:1.6.0
+    container_name: nut
+    restart: unless-stopped
+    environment:
+      - PANGOLIN_ENDPOINT=https://pangolin.datalab.aplab.be
+      - NEWT_ID=3ikpl36o2kxvn51
+      - NEWT_SECRET=e5ebupj1q9m2jkrezdo2tn1zbqiivr4f6pj5o02lphzu4hwx
